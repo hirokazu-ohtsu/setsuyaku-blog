@@ -1,0 +1,28 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import { SITE, showDrafts, url } from '../site';
+
+const posts = (await getCollection('posts', ({ data }) => showDrafts || !data.draft))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+---
+<Base>
+  <section class="hero">
+    <h1>{SITE.tagline}</h1>
+    <p>スマホ代・ネット回線・カード払いなど、自分で試した固定費の見直しを、金額つきで記録しています。</p>
+  </section>
+  {posts.length === 0 ? (
+    <p class="empty">記事を準備中です。</p>
+  ) : (
+    <ul class="post-list">
+      {posts.map((p) => (
+        <li class="post-card">
+          <span class="cat">{p.data.category}</span>
+          {p.data.draft && <span class="draft-flag">下書き</span>}
+          <div><a href={url(`posts/${p.id}/`)}>{p.data.title}</a></div>
+          <p>{p.data.description}</p>
+        </li>
+      ))}
+    </ul>
+  )}
+</Base>

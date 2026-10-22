@@ -1,0 +1,25 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import { showDrafts } from '../../site';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('posts', ({ data }) => showDrafts || !data.draft);
+  return posts.map((post) => ({ params: { id: post.id }, props: { post } }));
+}
+const { post } = Astro.props;
+const { Content } = await render(post);
+const fmt = (d: Date) => `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日`;
+---
+<Base title={post.data.title} description={post.data.description}>
+  <article>
+    {post.data.pr && <div class="pr-label">PR 本記事には広告が含まれます</div>}
+    <h1>{post.data.title}{post.data.draft && <span class="draft-flag">下書き</span>}</h1>
+    <div class="meta">
+      <span class="cat">{post.data.category}</span>
+      <time datetime={post.data.date.toISOString()}>{fmt(post.data.date)}</time>
+      {post.data.updated && <span>（更新：{fmt(post.data.updated)}）</span>}
+    </div>
+    <Content />
+  </article>
+</Base>

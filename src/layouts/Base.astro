@@ -1,0 +1,52 @@
+---
+import '../styles/global.css';
+import { SITE, url } from '../site';
+
+interface Props { title?: string; description?: string; }
+const { title, description = SITE.tagline } = Astro.props;
+const fullTitle = title ? `${title}｜${SITE.title}` : SITE.title;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+---
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content={title ? 'article' : 'website'} />
+    <meta property="og:url" content={canonical} />
+    <meta name="twitter:card" content="summary" />
+    <link rel="icon" href={url('favicon.svg')} type="image/svg+xml" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="wrap">
+        <a class="site-title" href={url()}>かずっちの<span>固定費見直し帳</span></a>
+        <nav class="nav">
+          <a href={url()}>記事一覧</a>
+          <a href={url('about/')}>運営者情報</a>
+        </nav>
+      </div>
+    </header>
+    <main>
+      <div class="wrap">
+        <slot />
+      </div>
+    </main>
+    <footer class="site-footer">
+      <div class="wrap">
+        <div class="links">
+          <a href={url('about/')}>運営者情報</a>
+          <a href={url('privacy/')}>プライバシーポリシー・免責事項</a>
+          <a href={url('contact/')}>お問い合わせ</a>
+        </div>
+        <div>当サイトはアフィリエイト広告を利用しています。</div>
+        <div>© {new Date().getFullYear()} {SITE.author}</div>
+      </div>
+    </footer>
+  </body>
+</html>
